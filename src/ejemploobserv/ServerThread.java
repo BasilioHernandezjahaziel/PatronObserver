@@ -7,6 +7,8 @@ package ejemploobserv;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,15 +17,18 @@ import java.util.logging.Logger;
  * @author david
  */
 public class ServerThread extends Thread{
- 
+    private static List<HiloCliente> listClientes = new ArrayList<HiloCliente>();
     private boolean isStoped=false;
     private ServerSocket server=null;
     private Observer observer;
     
     public ServerThread(Observer observer) throws IOException {
         this.observer=observer;
-        server=new ServerSocket(7700);
-        
+        server=new ServerSocket(7700);      
+    }
+
+    public static List<HiloCliente> getListClientes() {
+        return listClientes;
     }
     
     public synchronized void stoped(){
@@ -36,6 +41,7 @@ public class ServerThread extends Thread{
             try {
                 cliente = server.accept();
                 HiloCliente hc= new HiloCliente(cliente);
+                listClientes.add(hc);
                 hc.addObserver(observer);
                 Thread hilo=new Thread(hc);
                 hilo.start();
